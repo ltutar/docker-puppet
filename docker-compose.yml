@@ -1,0 +1,38 @@
+master:
+  build: docker-puppet
+  hostname: puppet
+  command: "/usr/bin/puppet master --no-daemonize --verbose"
+  volumes:
+    - ./config/autosign.conf:/etc/puppet/autosign.conf
+    - ./cache/puppet:/etc/puppet/environments
+    - ./cache/hiera:/etc/puppet/hiera
+    - ./cache/yum/:/var/cache/yum/
+  
+  #   - ./keys/:/root/.ssh/
+  #   - ./config/r10k.yaml:/etc/r10k.yaml
+  #   - ../puppet-jdk_base24:/etc/puppet/environments/production/jdk_base24
+  # extra_hosts:
+  #   - "test:10.10.10.10"
+
+agent1:
+  build: docker-puppet
+  hostname: agent1
+  command: "/usr/bin/puppet agent --test"
+  links:
+    - master:puppet
+  volumes:
+    - ./cache/yum:/var/cache/yum
+    - ./cache/wget:/var/cache/wget
+  # extra_hosts:
+  #   - "test:10.10.10.10"
+
+agent2:
+  build: docker-puppet
+  hostname: agent2
+  links:
+    - master:puppet
+  volumes:
+    - ./cache/yum:/var/cache/yum
+    - ./cache/wget:/var/cache/wget
+  # extra_hosts:
+  #   - "test:10.10.10.10"
