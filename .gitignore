@@ -1,0 +1,2 @@
+# Exclude cache directory
+/cache/*
